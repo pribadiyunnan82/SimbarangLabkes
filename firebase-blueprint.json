@@ -1,0 +1,255 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "User profile document storing basic account and display information",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Firebase Auth user UID",
+          "maxLength": 128
+        },
+        "email": {
+          "type": "string",
+          "description": "User email address",
+          "maxLength": 256
+        },
+        "displayName": {
+          "type": "string",
+          "description": "Display name of the user",
+          "maxLength": 128
+        },
+        "photoURL": {
+          "type": "string",
+          "description": "User profile avatar URL",
+          "maxLength": 512
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "ISO timestamp when the user profile was initialized"
+        }
+      },
+      "required": ["id", "email", "displayName", "createdAt"]
+    },
+    "TodoList": {
+      "title": "TodoList",
+      "description": "A shared to-do list workspace containing tasks and collaborative members",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique list identifier",
+          "maxLength": 128
+        },
+        "title": {
+          "type": "string",
+          "description": "Name or title of the to-do list",
+          "maxLength": 100,
+          "minLength": 1
+        },
+        "description": {
+          "type": "string",
+          "description": "Optional notes or summary of the list",
+          "maxLength": 500
+        },
+        "color": {
+          "type": "string",
+          "description": "Theme color code or name",
+          "enum": ["blue", "emerald", "violet", "amber", "rose", "indigo", "teal", "slate"]
+        },
+        "icon": {
+          "type": "string",
+          "description": "Emoji or icon for the list",
+          "maxLength": 10
+        },
+        "ownerId": {
+          "type": "string",
+          "description": "UID of the creator and owner",
+          "maxLength": 128
+        },
+        "ownerEmail": {
+          "type": "string",
+          "description": "Email of the owner",
+          "maxLength": 256
+        },
+        "memberIds": {
+          "type": "array",
+          "description": "List of user UIDs who have access to this list"
+        },
+        "memberEmails": {
+          "type": "array",
+          "description": "List of user emails invited or joined to this list"
+        },
+        "isPublic": {
+          "type": "boolean",
+          "description": "Whether anyone with the link can view or join this list"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Creation timestamp"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Last update timestamp"
+        }
+      },
+      "required": ["id", "title", "ownerId", "ownerEmail", "memberIds", "createdAt"]
+    },
+    "TodoTask": {
+      "title": "TodoTask",
+      "description": "An individual task item belonging to a shared to-do list",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique task identifier",
+          "maxLength": 128
+        },
+        "listId": {
+          "type": "string",
+          "description": "Parent list identifier",
+          "maxLength": 128
+        },
+        "title": {
+          "type": "string",
+          "description": "Task task title",
+          "maxLength": 200,
+          "minLength": 1
+        },
+        "description": {
+          "type": "string",
+          "description": "Detailed task instructions or description",
+          "maxLength": 1000
+        },
+        "completed": {
+          "type": "boolean",
+          "description": "Completion state"
+        },
+        "priority": {
+          "type": "string",
+          "description": "Urgency level",
+          "enum": ["low", "medium", "high", "urgent"]
+        },
+        "dueDate": {
+          "type": "string",
+          "description": "Target due date YYYY-MM-DD",
+          "maxLength": 30
+        },
+        "assignedTo": {
+          "type": "string",
+          "description": "UID of assigned team member",
+          "maxLength": 128
+        },
+        "assignedToName": {
+          "type": "string",
+          "description": "Name of assigned member",
+          "maxLength": 128
+        },
+        "createdBy": {
+          "type": "string",
+          "description": "UID of author who created task",
+          "maxLength": 128
+        },
+        "createdByName": {
+          "type": "string",
+          "description": "Display name of author",
+          "maxLength": 128
+        },
+        "subtasks": {
+          "type": "array",
+          "description": "List of checklist subtasks"
+        },
+        "tags": {
+          "type": "array",
+          "description": "Category tags for the task"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Creation timestamp"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Last update timestamp"
+        },
+        "completedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Completion timestamp"
+        },
+        "completedBy": {
+          "type": "string",
+          "description": "UID of user who marked completed",
+          "maxLength": 128
+        }
+      },
+      "required": ["id", "listId", "title", "completed", "priority", "createdBy", "createdAt"]
+    },
+    "ActivityLog": {
+      "title": "ActivityLog",
+      "description": "Real-time activity audit log of changes made to the shared list",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique log entry ID",
+          "maxLength": 128
+        },
+        "listId": {
+          "type": "string",
+          "description": "Associated list ID",
+          "maxLength": 128
+        },
+        "userId": {
+          "type": "string",
+          "description": "UID of user who performed action",
+          "maxLength": 128
+        },
+        "userName": {
+          "type": "string",
+          "description": "Display name of user",
+          "maxLength": 128
+        },
+        "action": {
+          "type": "string",
+          "description": "Action type identifier",
+          "maxLength": 50
+        },
+        "details": {
+          "type": "string",
+          "description": "Human readable action description",
+          "maxLength": 300
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp when action occurred"
+        }
+      },
+      "required": ["id", "listId", "userId", "userName", "action", "details", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "UserProfile",
+      "description": "Stores user profile data accessible by the user themselves or collaborating members"
+    },
+    "/lists/{listId}": {
+      "schema": "TodoList",
+      "description": "Collection of shared to-do lists"
+    },
+    "/lists/{listId}/tasks/{taskId}": {
+      "schema": "TodoTask",
+      "description": "Subcollection of tasks inside a specific to-do list"
+    },
+    "/lists/{listId}/activities/{activityId}": {
+      "schema": "ActivityLog",
+      "description": "Subcollection of recent real-time activity events for a list"
+    }
+  }
+}

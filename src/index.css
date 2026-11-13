@@ -1,0 +1,152 @@
+@import "tailwindcss";
+
+@media print {
+  /* Hide all navigation, sidebars, buttons, filter panels, footers, and non-data UI */
+  header,
+  nav,
+  aside,
+  button,
+  input,
+  select,
+  textarea,
+  .no-print,
+  [data-no-print="true"],
+  .no-print-area {
+    display: none !important;
+  }
+
+  /* Reset body and container for pristine full-page data printing */
+  html,
+  body,
+  #root {
+    background: #ffffff !important;
+    color: #000000 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    height: auto !important;
+    min-height: 100% !important;
+    width: 100% !important;
+    font-size: 9.5pt !important;
+    line-height: 1.4 !important;
+    overflow: visible !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Remove scrollbars, flex-constraints, and screen paddings */
+  main {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow: visible !important;
+    display: block !important;
+  }
+
+  /* Container wrapper */
+  .max-w-7xl {
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* Card and box resets: flatten all borders, drop-shadows and paddings */
+  .bg-white,
+  .rounded-2xl,
+  .rounded-xl,
+  .shadow-xs,
+  .shadow-sm,
+  .shadow-md,
+  .shadow-lg,
+  .shadow-xl,
+  .shadow-2xl {
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    border: none !important;
+  }
+
+  /* Dedicated data table formatting for PDF printout */
+  table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    border-spacing: 0 !important;
+    page-break-inside: auto !important;
+    margin-top: 10px !important;
+    margin-bottom: 12px !important;
+  }
+
+  thead {
+    display: table-header-group !important;
+  }
+
+  tfoot {
+    display: table-footer-group !important;
+  }
+
+  tr {
+    page-break-inside: avoid !important;
+    page-break-after: auto !important;
+  }
+
+  th,
+  td {
+    border: 1px solid #94a3b8 !important;
+    padding: 6px 8px !important;
+    color: #000000 !important;
+    font-size: 8.5pt !important;
+    text-align: left;
+    background: transparent !important;
+  }
+
+  th {
+    background-color: #f1f5f9 !important;
+    font-weight: 700 !important;
+    color: #0f172a !important;
+    text-transform: uppercase !important;
+    font-size: 8pt !important;
+    border-bottom: 2px solid #64748b !important;
+  }
+
+  /* Alignments in print */
+  .text-right {
+    text-align: right !important;
+  }
+  .text-center {
+    text-align: center !important;
+  }
+
+  /* Modal print handling: when printing from inside a transaction receipt or opname modal */
+  .print-modal-container {
+    position: static !important;
+    inset: auto !important;
+    background: transparent !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+    display: block !important;
+    overflow: visible !important;
+  }
+
+  .print-modal-box {
+    position: static !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  /* Show dedicated print-only elements */
+  .print-only {
+    display: block !important;
+  }
+}
+
+@media screen {
+  .print-only {
+    display: none !important;
+  }
+}

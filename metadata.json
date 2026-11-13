@@ -1,0 +1,8 @@
+{
+  "name": "Sistem Manajemen Inventaris",
+  "description": "Sistem Manajemen Inventaris terintegrasi untuk pencatatan master barang, barang masuk, barang keluar, stok real-time, kartu stok, stock opname, monitoring expired, dan laporan.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

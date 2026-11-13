@@ -1,0 +1,146 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Default deny all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Helper functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() > 0 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    // User profiles
+    match /users/{userId} {
+      allow get: if isSignedIn();
+      allow list: if isSignedIn();
+      allow create, update: if isOwner(userId)
+        && incoming().id == userId
+        && incoming().email is string && incoming().email.size() <= 256
+        && incoming().displayName is string && incoming().displayName.size() <= 128;
+      allow delete: if false;
+    }
+
+    // Shared Todo Lists
+    match /lists/{listId} {
+      function isListMember() {
+        return isSignedIn() && (
+          existing().ownerId == request.auth.uid ||
+          (existing().memberIds is list && request.auth.uid in existing().memberIds) ||
+          existing().isPublic == true
+        );
+      }
+
+      function isValidList(data) {
+        return data.id is string && data.id.size() <= 128
+          && data.title is string && data.title.size() > 0 && data.title.size() <= 100
+          && data.ownerId is string && data.ownerId == request.auth.uid
+          && data.ownerEmail is string && data.ownerEmail.size() <= 256
+          && data.memberIds is list && data.memberIds.size() <= 100;
+      }
+
+      allow get: if isSignedIn() && isListMember();
+      allow list: if isSignedIn();
+
+      allow create: if isSignedIn()
+        && isValidId(listId)
+        && incoming().id == listId
+        && isValidList(incoming());
+
+      allow update: if isSignedIn()
+        && isValidId(listId)
+        && (
+          // Owner can update everything
+          (existing().ownerId == request.auth.uid && incoming().ownerId == existing().ownerId) ||
+          // Collaborators can join or leave list memberIds
+          (existing().memberIds is list && (
+            incoming().diff(existing()).affectedKeys().hasOnly(['memberIds', 'memberEmails', 'updatedAt'])
+          ))
+        );
+
+      allow delete: if isSignedIn() && existing().ownerId == request.auth.uid;
+
+      // Tasks subcollection
+      match /tasks/{taskId} {
+        function getParentList() {
+          return get(/databases/$(database)/documents/lists/$(listId)).data;
+        }
+
+        function isParentListMember() {
+          return isSignedIn() && (
+            getParentList().ownerId == request.auth.uid ||
+            (getParentList().memberIds is list && request.auth.uid in getParentList().memberIds) ||
+            getParentList().isPublic == true
+          );
+        }
+
+        function isValidTask(data) {
+          return data.id is string && data.id.size() <= 128
+            && data.listId is string && data.listId == listId
+            && data.title is string && data.title.size() > 0 && data.title.size() <= 200
+            && data.completed is bool
+            && (data.priority in ['low', 'medium', 'high', 'urgent'])
+            && data.createdBy is string;
+        }
+
+        allow get, list: if isParentListMember();
+
+        allow create: if isParentListMember()
+          && isValidId(taskId)
+          && incoming().id == taskId
+          && isValidTask(incoming());
+
+        allow update: if isParentListMember()
+          && isValidId(taskId)
+          && incoming().id == existing().id
+          && incoming().listId == existing().listId
+          && isValidTask(incoming());
+
+        allow delete: if isParentListMember() && isValidId(taskId);
+      }
+
+      // Activity logs subcollection
+      match /activities/{activityId} {
+        function getParentList() {
+          return get(/databases/$(database)/documents/lists/$(listId)).data;
+        }
+
+        function isParentListMember() {
+          return isSignedIn() && (
+            getParentList().ownerId == request.auth.uid ||
+            (getParentList().memberIds is list && request.auth.uid in getParentList().memberIds) ||
+            getParentList().isPublic == true
+          );
+        }
+
+        allow get, list: if isParentListMember();
+
+        allow create: if isParentListMember()
+          && isValidId(activityId)
+          && incoming().id == activityId
+          && incoming().userId == request.auth.uid
+          && incoming().action is string && incoming().action.size() <= 50;
+
+        allow update, delete: if false;
+      }
+    }
+  }
+}
